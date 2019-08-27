@@ -1,0 +1,296 @@
+<html>
+  <head>
+    <script src="skulpt.min.js"></script>
+    <script src="skulpt-stdlib.js"></script>
+    <script src="EV3devSim.js"></script>
+    <script src="ace-src-min/ace.js"></script>
+    <link rel="stylesheet" href="main.css">
+    <title>EV3DEV Python Simulator</title>
+  </head>
+
+  <body>
+    <div id="field"></div>
+
+    <div class="row">
+      <div>
+        <select id="map">
+          <option>None</option>
+          <option>WRO 2019 Regular Junior</option>
+          <option>WRO 2018 Regular Junior</option>
+          <option>FLL 2019 - City Shaper</option>
+          <option>FLL 2018 - Into Orbit</option>
+          <option>Line Following Test</option>
+        </select>
+        <button id="robotConfiguratorOpen">Configure Robot</button>
+      </div>
+      <div class="right">
+        X : <input type="number" id="xPos">
+        Y : <input type="number" id="yPos">
+        Angle : <input type="number" id="angle">
+        <button id="move">Move</button>
+      </div>
+    </div>
+    <div class="row">
+      <div id="editor">
+        <div id="pythonCode"># Demo of a simple proportional line follower using two sensors
+# It's deliberately flawed and will exit with errors in some circumstances;
+# try fixing it!
+#
+# The robot configurations are as follows:
+#   - OUTPUT B : Left motor
+#   - OUTPUT C : Right motor
+#   - INPUT 2  : Left Color Sensor
+#   - INPUT 3  : Right Color Sensor
+# All other outputs and inputs are unconnected.
+
+from ev3dev2.motor import LargeMotor, OUTPUT_B, OUTPUT_C, SpeedPercent
+from ev3dev2.sensor import INPUT_2, INPUT_3
+from ev3dev2.sensor.lego import ColorSensor
+
+l = LargeMotor(OUTPUT_B)
+r = LargeMotor(OUTPUT_C)
+
+s1 = ColorSensor(INPUT_2)
+s2 = ColorSensor(INPUT_3)
+
+GAIN = 0.5
+
+while True:
+  error = s1.reflected_light_intensity - s2.reflected_light_intensity
+  correction = error * GAIN
+  l.on(SpeedPercent(20 + correction))
+  r.on(SpeedPercent(20 - correction))
+        </div>
+        <div class="row buttons">
+          <div class="leftFlex">
+            <button id="runCode">Run</button>
+            <button id="stop">Stop</button>
+          </div>
+          <div class="center">
+            <input type="checkbox" id="largeFont">Large Font
+          </div>
+          <div class="rightFlex">
+            <button id="upload">Upload File</button>
+            <button id="download">Download to File</button>
+          </div>
+        </div>
+      </div>
+      <pre id="output"></pre>
+    </div>
+
+    <div id="robotConfigurator" class="closed">
+      <textarea id="robotConfiguratorEditor"></textarea>
+      <div class="row buttons">
+        <div class="leftFlex">
+          <button id="robotConfiguratorApply">Apply</button>
+          <button id="robotConfiguratorCancel">Cancel</button>
+        </div>
+        <div class="rightFlex">
+          <button id="robotConfiguratorupload">Upload File</button>
+          <button id="robotConfiguratordownload">Download to File</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function setPos(x, y, angle) {
+        var x = parseFloat(x);
+        var y = parseFloat(y);
+        var angleRadian = parseFloat(angle) / 180 * Math.PI;
+
+        if (isNaN(x)) { x = 0; }
+        if (isNaN(y)) { y = 0; }
+        if (isNaN(angleRadian)) { angleRadian = 0; angle = 0; }
+
+        document.getElementById('xPos').value = x;
+        document.getElementById('yPos').value = y;
+        document.getElementById('angle').value  = angle;
+
+        sim.setRobotPos(x, y, angleRadian);
+        sim.drawRobot();
+      }
+
+      // Main
+      var sim = new EV3devSim('field');
+      setPos(2362/2, 1143/2, 0);
+
+      document.getElementById('move').addEventListener('click', function() {
+        setPos(
+          document.getElementById('xPos').value,
+          document.getElementById('yPos').value,
+          document.getElementById('angle').value
+        );
+      });
+      document.getElementById('stop').addEventListener('click', function() {
+        sim.stopAnimation();
+        Sk.hardInterrupt = true;
+      });
+      document.getElementById('largeFont').addEventListener('change', function(e) {
+        if (e.target.checked) {
+          document.getElementById('editor').classList.add('large');
+        } else {
+          document.getElementById('editor').classList.remove('large');
+        }
+      });
+      document.getElementById('download').addEventListener('click', function() {
+        var hiddenElement = document.createElement('a');
+        hiddenElement.href = 'data:text/x-python;base64,' + btoa(editor.getValue());
+        hiddenElement.target = '_blank';
+        hiddenElement.download = 'robot.py';
+        hiddenElement.dispatchEvent(new MouseEvent('click'));
+      });
+      document.getElementById('upload').addEventListener('click', function() {
+        var hiddenElement = document.createElement('input');
+        hiddenElement.type = 'file';
+        hiddenElement.accept = 'text/x-python,.py';
+        hiddenElement.dispatchEvent(new MouseEvent('click'));
+        hiddenElement.addEventListener('change', function(e){
+          var reader = new FileReader();
+          reader.onload = function() {
+            editor.setValue(this.result);
+          };
+          reader.readAsText(e.target.files[0]);
+        });
+      });
+      document.getElementById('map').addEventListener('change', function() {
+        var map = document.getElementById('map').value;
+
+        if (map == 'WRO 2019 Regular Junior') {
+          sim.loadBackground('WRO-2019-Regular-Junior.jpg');
+          setPos(2215, 50, 90);
+
+        } else if (map == 'WRO 2018 Regular Junior') {
+          sim.loadBackground('WRO-2018-Regular-Junior.png');
+          setPos(1181, 50, 90);
+
+        } else if (map == 'FLL 2019 - City Shaper') {
+          sim.loadBackground('FLL2019.jpg');
+          setPos(500, 50, 90);
+
+        } else if (map == 'FLL 2018 - Into Orbit') {
+          sim.loadBackground('FLL2018.jpg');
+          setPos(150, 50, 90);
+
+        } else if (map == 'Line Following Test') {
+          sim.loadBackground('Line_Following_Test.png');
+          setPos(141, 46, 90);
+
+        } else {
+          sim.clearBackground();
+          setPos(2362/2, 1143/2, 0);
+        }
+      });
+      document.getElementById('robotConfiguratorOpen').addEventListener('click', function() {
+        document.getElementById('robotConfiguratorEditor').value = JSON.stringify(sim.robotSpecs, null, 2);
+        document.getElementById('robotConfigurator').classList.remove('closed');
+      });
+      document.getElementById('robotConfiguratorCancel').addEventListener('click', function() {
+        document.getElementById('robotConfigurator').classList.add('closed');
+      });
+      document.getElementById('robotConfiguratorApply').addEventListener('click', function() {
+        var robotSpecs = JSON.parse(document.getElementById('robotConfiguratorEditor').value);
+        sim.loadRobot(robotSpecs);
+        sim.drawRobot();
+        document.getElementById('robotConfigurator').classList.add('closed');
+      });
+      document.getElementById('robotConfiguratordownload').addEventListener('click', function() {
+        var robotSpecs = document.getElementById('robotConfiguratorEditor').value
+        var hiddenElement = document.createElement('a');
+        hiddenElement.href = 'data:application/json;base64,' + btoa(robotSpecs);
+        hiddenElement.target = '_blank';
+        hiddenElement.download = 'robot_config.json';
+        hiddenElement.dispatchEvent(new MouseEvent('click'));
+      });
+      document.getElementById('robotConfiguratorupload').addEventListener('click', function() {
+        var hiddenElement = document.createElement('input');
+        hiddenElement.type = 'file';
+        hiddenElement.accept = 'application/json,.json,.js';
+        hiddenElement.dispatchEvent(new MouseEvent('click'));
+        hiddenElement.addEventListener('change', function(e){
+          var reader = new FileReader();
+          reader.onload = function() {
+            document.getElementById('robotConfiguratorEditor').value = this.result;
+          };
+          reader.readAsText(e.target.files[0]);
+        });
+      });
+
+
+      // Load Ace editor
+      var editor = ace.edit("pythonCode");
+      editor.setTheme("ace/theme/monokai");
+      editor.session.setMode("ace/mode/python");
+
+
+      // Load Skulpt
+      function outf(text) {
+        var mypre = document.getElementById("output");
+        mypre.innerHTML = mypre.innerHTML + text;
+        mypre.scrollTop = mypre.scrollHeight - mypre.clientHeight;
+      }
+
+      function builtinRead(x) {
+        var externalLibs = {
+          './ev3dev2/__init__.py': 'ev3dev2/__init__.py',
+          './ev3dev2/motor.py': 'ev3dev2/motor.py',
+          './ev3dev2/sensor/__init__.py': 'ev3dev2/sensor/__init__.py',
+          './ev3dev2/sensor/lego.py': 'ev3dev2/sensor/lego.py',
+          './ev3dev2_glue.js': 'ev3dev2_glue.js'
+        }
+        if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
+          if (x in externalLibs) {
+            return Sk.misceval.promiseToSuspension(
+              fetch(externalLibs[x])
+                .then(r => r.text())
+            );
+          } else {
+            throw "File not found: '" + x + "'";
+          }
+        }
+        return Sk.builtinFiles["files"][x];
+      }
+
+      var interruptHandler = function (susp) {
+        if (Sk.hardInterrupt === true) {
+          delete Sk.hardInterrupt;
+          throw new Sk.builtin.ExternalError('aborted execution');
+        } else {
+          return null;
+        }
+      };
+
+      function runit() {
+        sim.reset('left');
+        sim.reset('right');
+        sim.startAnimation();
+        var prog = editor.getValue();
+        var mypre = document.getElementById("output");
+        mypre.innerHTML = '';
+        Sk.pre = "output";
+        Sk.configure({output:outf, read:builtinRead});
+        var myPromise = Sk.misceval.asyncToPromise(
+          function() {
+            return Sk.importMainWithBody("<stdin>", false, prog, true);
+          },
+          {
+            '*': interruptHandler
+          }
+        );
+        myPromise.then(
+          function(mod) {
+            sim.stopAnimation();
+          },
+          function(err) {
+            sim.stopAnimation();
+            var mypre = document.getElementById("output");
+            mypre.innerHTML = mypre.innerHTML + '<span class="error">' + err.toString() + '</span>';
+            mypre.scrollTop = mypre.scrollHeight - mypre.clientHeight;
+          }
+        );
+      }
+
+      document.getElementById('runCode').addEventListener('click', runit);
+
+    </script>
+  </body>
+</html>

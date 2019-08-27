@@ -1,0 +1,149 @@
+<html>
+  <head>
+    <script src="skulpt.min.js"></script>
+    <script src="skulpt-stdlib.js"></script>
+    <script src="EV3devSim.js"></script>
+    <link rel="stylesheet" href="main.css">
+  </head>
+
+  <body>
+    <div id="field"></div>
+
+    <div class="row">
+      <div>
+        <button id="start">Start</button>
+        <button id="stop">Stop</button>
+      </div>
+      <div>
+        <select id="map">
+          <option>None</option>
+          <option>WRO 2019 Regular Junior</option>
+          <option>WRO 2018 Regular Junior</option>
+        </select>
+      </div>
+      <div class="right">
+        X : <input type="text" id="xPos">
+        Y : <input type="text" id="yPos">
+        Angle : <input type="text" id="angle">
+        <button id="move">Move</button>
+      </div>
+    </div>
+    <div class="row">
+      <form>
+        <textarea id="pythonCode" cols="80" rows="20">from ev3dev2.motor import LargeMotor, OUTPUT_B, SpeedPercent
+
+r = LargeMotor(OUTPUT_B)
+r.on_for_rotations(SpeedPercent(50), 3)
+</textarea><br />
+        <button type="button" id="runCode">Run</button>
+      </form>
+      <pre id="output"></pre>
+    </div>
+
+    <script>
+      function setPos(x, y, angle) {
+        var x = parseFloat(x);
+        var y = parseFloat(y);
+        var angleRadian = parseFloat(angle) / 180 * Math.PI;
+
+        if (isNaN(x)) { x = 0; }
+        if (isNaN(y)) { y = 0; }
+        if (isNaN(angleRadian)) { angleRadian = 0; angle = 0; }
+
+        document.getElementById('xPos').value = x;
+        document.getElementById('yPos').value = y;
+        document.getElementById('angle').value  = angle;
+
+        sim.setRobotPos(x, y, angleRadian);
+        sim.drawRobot();
+      }
+
+      // Main
+      var sim = new EV3devSim('field');
+      setPos(2362/2, 1143/2, 0);
+
+      document.getElementById('start').addEventListener('click', function() {
+        sim.startAnimation();
+      });
+      document.getElementById('stop').addEventListener('click', function() {
+        sim.stopAnimation();
+      });
+      document.getElementById('move').addEventListener('click', function() {
+        setPos(
+          document.getElementById('xPos').value,
+          document.getElementById('yPos').value,
+          document.getElementById('angle').value
+        );
+      });
+      document.getElementById('map').addEventListener('change', function() {
+        var map = document.getElementById('map').value;
+
+        if (map == 'WRO 2019 Regular Junior') {
+          sim.loadBackground('WRO-2019-Regular-Junior.png');
+          setPos(2215, 180, 90);
+
+        } else if (map == 'WRO 2018 Regular Junior') {
+          sim.loadBackground('WRO-2018-Regular-Junior.png');
+          setPos(1181, 180, 90);
+
+        } else {
+          sim.clearBackground();
+          setPos(2362/2, 1143/2, 0);
+        }
+      });
+
+      // Load Skulpt
+      function outf(text) {
+        var mypre = document.getElementById("output");
+        mypre.innerHTML = mypre.innerHTML + text;
+      }
+
+      function builtinRead(x) {
+        console.log(x);
+        var externalLibs = {
+          './ev3dev2/__init__.py': 'ev3dev2/__init__.py',
+          './ev3dev2/motor.py': 'ev3dev2/motor.py',
+          './ev3dev2_glue.js': 'ev3dev2_glue.js'
+        }
+        if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
+          if (x in externalLibs) {
+            console.log('found');
+            return Sk.misceval.promiseToSuspension(
+              fetch(externalLibs[x])
+                .then(r => r.text())
+            );
+          } else {
+            throw "File not found: '" + x + "'";
+          }
+        }
+        return Sk.builtinFiles["files"][x];
+      }
+
+      function runit() {
+        sim.reset('left');
+        sim.reset('right');
+        sim.startAnimation();
+        var prog = document.getElementById("pythonCode").value;
+        var mypre = document.getElementById("output");
+        mypre.innerHTML = '';
+        Sk.pre = "output";
+        Sk.configure({output:outf, read:builtinRead});
+        var myPromise = Sk.misceval.asyncToPromise(function() {
+          return Sk.importMainWithBody("<stdin>", false, prog, true);
+        });
+        myPromise.then(
+          function(mod) {
+            sim.stopAnimation();
+            console.log('success');
+          },
+          function(err) {
+            sim.stopAnimation();
+            console.log(err.toString());
+          }
+        );
+      }
+
+      document.getElementById('runCode').addEventListener('click', runit);
+    </script>
+  </body>
+</html>

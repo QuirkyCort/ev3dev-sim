@@ -1,0 +1,83 @@
+.row {
+  display: flex;
+  justify-content: space-between;
+  width: 1181;
+  margin-top: 0.5em;
+}
+
+.right {
+  text-align: right;
+}
+
+.right > input {
+  margin-right: 2em;
+  width: 5em;
+  text-align: right;
+}
+
+#output {
+  border: solid 1px black;
+  flex-grow: 1;
+  margin-top: 0;
+  margin-left: 1em;
+  padding: 0.5em;
+  background: black;
+  color: white;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 23em;
+}
+
+#output > .error {
+  color: red;
+}
+
+.editor {
+  width: 40em;
+}
+
+#pythonCode {
+  width: 100%;
+  height: 25em;
+}
+
+.buttons {
+  margin-top: 0.2em;
+  width: 100%;
+}
+
+#robotConfigurator {
+  position: absolute;
+  top: 100px;
+  left: 200;
+  width: 681;
+  height: 400;
+  background: lightgray;
+  border: solid 2px black;
+  border-radius: 0.5em;
+  padding: 0.5em 0.5em 1.8em 0.5em;
+  box-sizing: border-box;
+  transition: top 0.5s;
+}
+
+#robotConfigurator > textarea {
+  resize: none;
+}
+
+#robotConfigurator.closed {
+  top: -1000px;
+}
+
+#robotConfiguratorClose {
+  font-family: sans-serif;
+  font-weight: bold;
+  position: absolute;
+  right: 0.5em;
+  top: 0.5em;
+}
+
+#robotConfiguratorEditor {
+  background: white;
+  width: 100%;
+  height: 100%;
+}

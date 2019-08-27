@@ -1,0 +1,10 @@
+- Support acceleration
+  - Maybe configurable by setting a weight
+- Option to add noise. Maybe...
+  - random up to 1% error on speed_sp setting
+  - random up to 5 degrees error on pos_sp
+- Select some common robots configurations
+- Create challenge based lessons?
+- Option to ignore invalid motors and sensors
+- Allow any combination of sensors
+- Collision physics

@@ -1,0 +1,23 @@
+<head>
+  <script src="EV3devSim.js"></script>
+</head>
+
+<div id="field"></div>
+
+<button id="start">Start</button>
+<button id="stop">Stop</button>
+
+<script>
+  var sim = new EV3devSim('field');
+  sim.loadBackground('WRO-2019-Regular-Junior.png');
+  sim.setRobotPos(2362/2, 1143/2 + 30, 0);
+  sim.setRobotSpeed(100, 100);
+
+  document.getElementById('start').addEventListener('click', function() {
+    sim.startAnimation();
+  });
+  document.getElementById('stop').addEventListener('click', function() {
+    sim.stopAnimation();
+  });
+
+</script>

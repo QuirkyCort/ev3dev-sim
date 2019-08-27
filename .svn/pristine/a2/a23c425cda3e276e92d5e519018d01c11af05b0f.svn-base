@@ -1,0 +1,9 @@
+<head>
+  <script src="EV3devSim.js"></script>
+</head>
+
+<div id="field"></div>
+
+<script>
+  var sim = EV3devSim('field');
+</script>
