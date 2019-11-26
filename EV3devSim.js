@@ -397,6 +397,7 @@ function EV3devSim (id) {
     wheel.time_sp = 0;
     wheel.speed = 0;
     wheel.state = '';
+    wheel.polarity = 'normal';
   };
 
   this.reset = function() {
@@ -410,19 +411,29 @@ function EV3devSim (id) {
   this.calcWheelDist = function(wheel) {
     var period = 1 / self.fps;
     var dist = 0;
+    var degrees = wheel.speed * period;
 
     if (
       wheel.command == 'run-forever'
-      || wheel.command == 'run-timed' && self.clock < wheel.time_target
+      || (wheel.command == 'run-timed' && self.clock < wheel.time_target)
     ) {
-      dist = (wheel.speed / 360) * (self.robotSpecs.wheeldiameter * Math.PI) * period;
+      dist = (degrees / 360) * (self.robotSpecs.wheeldiameter * Math.PI);
+      wheel.pos += degrees;
 
-    } else if (wheel.command == 'run-to-rel-pos' || wheel.command == 'run-to-abs-pos') {
-      dist = (Math.abs(wheel.speed) / 360) * (self.robotSpecs.wheeldiameter * Math.PI) * period;
-      if (wheel.position_sp >= 0 && wheel.pos < wheel.position_target);
-      else if (wheel.position_sp < 0 && wheel.pos > wheel.position_target) {
-        dist = -dist;
-      } else {
+    } else if (
+      wheel.command == 'run-to-rel-pos'
+      || wheel.command == 'run-to-abs-pos'
+    ) {
+      if (wheel.position_sp < 0) {
+        degrees = -degrees;
+      }
+      wheel.pos += degrees;
+
+      dist = (degrees / 360) * (self.robotSpecs.wheeldiameter * Math.PI);
+      if (
+        (wheel.position_sp >= 0 && wheel.pos > wheel.position_target)
+        || (wheel.position_sp < 0 && wheel.pos < wheel.position_target)
+      ) {
         wheel.state = '';
         return 0;
       }
@@ -431,8 +442,6 @@ function EV3devSim (id) {
       wheel.state = '';
       return 0;
     }
-
-    wheel.pos += dist;
 
     if (wheel.polarity == 'inversed') {
       return -dist;

@@ -7,9 +7,9 @@ EV3DEV, even without an actual EV3 available.
 Installation
 ---
 
-The simulator is meant to be served through a webserver. Download all files
-and put them in a directory on your server and that should be it. All files
-are served statically, so it should work fine even if accessed locally.
+The simulator is meant to be served through a webserver.
+Download all files and put them in a directory on your server and that should be it.
+Due to CORS protection on web browsers, it will not work when served from a "file://" URL.
 
 Credits
 ---
