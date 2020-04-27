@@ -198,14 +198,17 @@ class UltrasonicSensor:
 
   @property
   def distance_centimeters_continuous(self):
+    time.sleep(SENSOR_DELAY)
     return int(self.sensor.dist()) / 10.0
 
   @property
   def distance_centimeters_ping(self):
+    time.sleep(SENSOR_DELAY)
     return int(self.sensor.dist()) / 10.0
 
   @property
   def distance_centimeters(self):
+    time.sleep(SENSOR_DELAY)
     return int(self.sensor.dist()) / 10.0
 
   @property
@@ -222,4 +225,5 @@ class UltrasonicSensor:
 
   @property
   def other_sensor_present(self):
+    time.sleep(SENSOR_DELAY)
     return False
