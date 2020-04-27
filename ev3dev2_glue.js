@@ -30,11 +30,19 @@ var $builtinmodule = function(name) {
 
       } else if (command.v == 'run-to-rel-pos') {
         self.wheel.position_target = self.wheel.pos + self.wheel.position_sp;
-        self.wheel.state = 'running';
+        if (self.wheel.position_target != self.wheel.pos) {
+          self.wheel.state = 'running';
+        } else {
+          self.wheel.state = '';
+        }
 
       } else if (command.v == 'run-to-abs-pos') {
         self.wheel.position_target = self.wheel.position_sp;
-        self.wheel.state = 'running';
+        if (self.wheel.position_target != self.wheel.pos) {
+          self.wheel.state = 'running';
+        } else {
+          self.wheel.state = '';
+        }
 
       } else if (command.v == 'run-forever') {
         self.wheel.state = 'running';

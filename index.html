@@ -23,7 +23,8 @@
     <div class="row">
       <div>
         <select id="map">
-          <option>Empty Map</option>
+          <option>Empty Map</tion>
+          <option>WRO 2020 Regular Junior</option>
           <option>WRO 2019 Regular Junior</option>
           <option>WRO 2018 Regular Junior</option>
           <option>FLL 2019 - City Shaper</option>
@@ -281,7 +282,13 @@ while True:
       document.getElementById('map').addEventListener('input', function() {
         var map = document.getElementById('map').value;
 
-        if (map == 'WRO 2019 Regular Junior') {
+        if (map == 'WRO 2020 Regular Junior') {
+          sim.loadBackground('WRO-2020-Regular-Junior.png');
+          sim.clearObstacles();
+          sim.clearObstaclesLayer();
+          setPos(130, 130, 0);
+
+        } else if (map == 'WRO 2019 Regular Junior') {
           sim.loadBackground('WRO-2019-Regular-Junior.jpg');
           sim.clearObstacles();
           sim.clearObstaclesLayer();

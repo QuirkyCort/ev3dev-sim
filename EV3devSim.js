@@ -234,7 +234,7 @@ function EV3devSim (id) {
         wheeldiameter: 56,
         wheelSpacing: 180,
         back: -120,
-        weight: 'medium',
+        weight: 'weightless',
         sensor1: {
           x: -20,
           y: 30
