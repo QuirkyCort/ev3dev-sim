@@ -51,6 +51,7 @@
           <div class="leftFlex">
             <button id="runCode">Run</button>
             <button id="stop">Stop</button>
+            <button id="reset">Reset</button>
           </div>
           <div class="center">
             <input type="checkbox" id="largeFont">Large Font
@@ -243,6 +244,15 @@ while True:
       document.getElementById('stop').addEventListener('click', function() {
         sim.stopAnimation();
         Sk.hardInterrupt = true;
+      });
+      document.getElementById('reset').addEventListener('click', function() {
+        sim.stopAnimation();
+        Sk.hardInterrupt = true;
+        setPos(
+          document.getElementById('xPos').value,
+          document.getElementById('yPos').value,
+          document.getElementById('angle').value
+        );
       });
       document.getElementById('largeFont').addEventListener('change', function(e) {
         if (e.target.checked) {
