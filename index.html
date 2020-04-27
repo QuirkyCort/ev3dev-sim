@@ -32,9 +32,10 @@
           <option>Line Following Test</option>
           <option>Junction Handling Test</option>
           <option>Obstacles Test</option>
-          <option>Upload Image (2362x1143px)...</option>
+          <!-- <option>Upload Image (2362x1143px)...</option> -->
           <option hidden>Custom Image</option>
         </select>
+        <button id="uploadMap">Upload Image (2362x1143px)...</button>
         <button id="robotConfiguratorOpen">Configure Robot</button>
         <button id="configureObstacles">Obstacles...</button>
       </div>
@@ -348,8 +349,15 @@ while True:
             [2126, 388, 150, 150]
           ]);
 
-        } else if (map == 'Upload Image (2362x1143px)...') {
-          console.log('upload');
+        } else {
+          sim.clearBackground();
+          sim.clearObstacles();
+          sim.clearObstaclesLayer();
+          setPos(2362/2, 1143/2, 0);
+        }
+      });
+      document.getElementById('uploadMap').addEventListener('click', function() {
+        console.log('upload');
           var hiddenElement = document.createElement('input');
           hiddenElement.type = 'file';
           hiddenElement.accept = 'image/*';
@@ -366,13 +374,6 @@ while True:
           });
           var select = document.getElementById('map');
           select.selectedIndex = select.options.length - 1;
-
-        } else {
-          sim.clearBackground();
-          sim.clearObstacles();
-          sim.clearObstaclesLayer();
-          setPos(2362/2, 1143/2, 0);
-        }
       });
       document.getElementById('robotConfiguratorOpen').addEventListener('click', function() {
         document.getElementById('robotConfiguratorEditor').value = JSON.stringify(sim.robotSpecs, null, 2);
