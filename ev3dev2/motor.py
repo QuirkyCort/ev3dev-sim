@@ -622,7 +622,7 @@ class Motor:
       speed_sp = int(round(speed.to_native_units(self)))
 
     self.speed_sp = int(round(speed_sp))
-    self.time_sp = int(seconds * 1000)
+    self.time_sp = seconds
 
     if brake:
       self.stop_action = self.STOP_ACTION_HOLD
