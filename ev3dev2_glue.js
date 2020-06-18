@@ -124,14 +124,14 @@ var $builtinmodule = function(name) {
     });
 
     $loc.valueLAB = new Sk.builtin.func(function(self) {
-      var rgb = [0, 0, 0];
+      var rgb;
       var xyz = [0, 0, 0];
       var lab = [0, 0, 0];
 
       if (self.side == 'left') {
-        rgb = sim.robotStates.sensor1;
+        rgb = [...sim.robotStates.sensor1];
       } else if (self.side == 'right') {
-        rgb = sim.robotStates.sensor2;
+        rgb = [...sim.robotStates.sensor2];
       }
 
       for (let i=0; i<3; i++) {
@@ -163,13 +163,13 @@ var $builtinmodule = function(name) {
     });
 
     $loc.valueHSV = new Sk.builtin.func(function(self) {
-      var rgb = [0, 0, 0];
+      var rgb;
       var hsv = [0, 0, 0];
 
       if (self.side == 'left') {
-        rgb = sim.robotStates.sensor1;
+        rgb = [...sim.robotStates.sensor1];
       } else if (self.side == 'right') {
-        rgb = sim.robotStates.sensor2;
+        rgb = [...sim.robotStates.sensor2];
       }
       for (let i=0; i<3; i++) {
         rgb[i] = rgb[i] / 255;
@@ -204,13 +204,13 @@ var $builtinmodule = function(name) {
     });
 
     $loc.valueHLS = new Sk.builtin.func(function(self) {
-      var rgb = [0, 0, 0];
+      var rgb;
       var hls = [0, 0, 0];
 
       if (self.side == 'left') {
-        rgb = sim.robotStates.sensor1;
+        rgb = [...sim.robotStates.sensor1];
       } else if (self.side == 'right') {
-        rgb = sim.robotStates.sensor2;
+        rgb = [...sim.robotStates.sensor2];
       }
       for (let i=0; i<3; i++) {
         rgb[i] = rgb[i] / 255;
