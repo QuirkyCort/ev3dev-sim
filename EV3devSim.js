@@ -427,7 +427,6 @@ function EV3devSim (id) {
       if (wheel.position_sp < 0) {
         degrees = -degrees;
       }
-      wheel.pos += degrees;
 
       dist = (degrees / 360) * (self.robotSpecs.wheeldiameter * Math.PI);
       if (
@@ -437,7 +436,7 @@ function EV3devSim (id) {
         wheel.state = '';
         return 0;
       }
-
+      wheel.pos += degrees;
     } else {
       wheel.state = '';
       return 0;
