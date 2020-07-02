@@ -281,6 +281,31 @@ var $builtinmodule = function(name) {
 
   }, 'UltrasonicSensor', []);
 
+  mod.Sound = Sk.misceval.buildClass(mod, function($gbl, $loc) {
+    var self = this;
+
+    $loc.__init__ = new Sk.builtin.func(function(self, address) {
+      self.volume = 1.0;
+    });
+
+    $loc.speak = new Sk.builtin.func(function(self, command) {
+      var utter = new SpeechSynthesisUtterance(command.v);
+      utter.volume = self.volume;
+      speechSynthesis.speak(utter);
+    });
+
+    $loc.set_volume = new Sk.builtin.func(function(self, volume) {
+      self.volume = parseFloat(volume.v) / 100;
+    });
+
+    $loc.get_volume = new Sk.builtin.func(function(self) {
+      return self.volume;
+    });
+
+    $loc.isSpeaking = new Sk.builtin.func(function(self, command) {
+      return speechSynthesis.speaking;
+    });
+  }, 'Sound', []);
 
   return mod;
 };
