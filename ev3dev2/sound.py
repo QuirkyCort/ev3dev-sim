@@ -17,7 +17,7 @@ class Sound:
   def get_volume(self, pct):
     return self.sound.get_volume()
 
-  def speak(self, text, espeak_opts='-a 200 -s 130', volume=100, play_type=0):
+  def speak(self, text, espeak_opts='', volume=100, play_type=0):
     self.sound.set_volume(volume)
     if play_type == self.PLAY_NO_WAIT_FOR_COMPLETE:
       self.sound.speak(text)
@@ -29,4 +29,31 @@ class Sound:
       while True:
         self.sound.speak(text)
         while self.sound.isSpeaking():
+          time.sleep(SENSOR_DELAY)
+
+  def play_tone(self, frequency, duration, delay=0.0, volume=100, play_type=0):
+    self.sound.set_volume(volume)
+    if play_type == self.PLAY_NO_WAIT_FOR_COMPLETE:
+      self.sound.play_tone(frequency, duration, delay)
+    elif play_type == self.PLAY_WAIT_FOR_COMPLETE:
+      self.sound.play_tone(frequency, duration, delay)
+      while self.sound.isPlaying():
+        time.sleep(SENSOR_DELAY)
+    elif play_type == self.PLAY_LOOP:
+      while True:
+        self.sound.play_tone(frequency, duration, delay)
+        while self.sound.isPlaying():
+          time.sleep(SENSOR_DELAY)
+
+  def beep(self, args='', play_type=0):
+    if play_type == self.PLAY_NO_WAIT_FOR_COMPLETE:
+      self.sound.play_tone(440, 0.2, 0)
+    elif play_type == self.PLAY_WAIT_FOR_COMPLETE:
+      self.sound.play_tone(440, 0.2, 0)
+      while self.sound.isPlaying():
+        time.sleep(SENSOR_DELAY)
+    elif play_type == self.PLAY_LOOP:
+      while True:
+        self.sound.play_tone(440, 0.2, 0)
+        while self.sound.isPlaying():
           time.sleep(SENSOR_DELAY)
