@@ -1,3 +1,7 @@
+.gearsLink {
+  font-size: 200%;
+}
+
 .row {
   display: flex;
   justify-content: space-between;
