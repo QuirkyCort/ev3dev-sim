@@ -60,6 +60,7 @@
             <input type="checkbox" id="longWindow">Long Window
           </div>
           <div class="rightFlex">
+            <button id="restore">Restore</button>
             <button id="upload">Load</button>
             <button id="download">Save</button>
           </div>
@@ -291,6 +292,9 @@ while True:
           reader.readAsText(e.target.files[0]);
         });
       });
+      document.getElementById('restore').addEventListener('click', function() {
+        editor.setValue(localStorage.getItem('ev3devSim_Code'), 1);
+      });
       document.getElementById('map').addEventListener('input', function() {
         var map = document.getElementById('map').value;
 
@@ -493,10 +497,12 @@ while True:
         sim.reset();
         sim.startAnimation();
         var prog = editor.getValue();
+        localStorage.setItem('ev3devSim_Code', prog);
         var mypre = document.getElementById("output");
         mypre.innerHTML = '';
         Sk.pre = "output";
         Sk.configure({output:outf, read:builtinRead});
+        Sk.execLimit = 5000;
         var myPromise = Sk.misceval.asyncToPromise(
           function() {
             return Sk.importMainWithBody("<stdin>", false, prog, true);
@@ -505,8 +511,10 @@ while True:
             '*': interruptHandler
           }
         );
+        var resetExecStart = setInterval(function(){Sk.execStart = Date();}, 2000);
         myPromise.then(
           function(mod) {
+            clearInterval(resetExecStart);
             sim.stopAnimation();
             Sk.running = false;
           },
@@ -516,6 +524,7 @@ while True:
             var mypre = document.getElementById("output");
             mypre.innerHTML = mypre.innerHTML + '<span class="error">' + err.toString() + '</span>';
             mypre.scrollTop = mypre.scrollHeight - mypre.clientHeight;
+            clearInterval(resetExecStart);
           }
         );
       }
