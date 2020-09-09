@@ -63,7 +63,11 @@
 }
 
 #editor {
-  width: 40em;
+  width: 41em;
+}
+
+#centerCheckboxes {
+  font-size: 80%;
 }
 
 #pythonCode {
